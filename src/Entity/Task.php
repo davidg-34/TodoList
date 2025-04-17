@@ -5,44 +5,32 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity
- * @ORM\Table
- */
+#[ORM\Entity]
+#[ORM\Table(name: 'task')]
 class Task
 {
-    /**
-     * @ORM\Column(type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
+    private ?int $id = null;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $createdAt;
+    #[ORM\Column(type: 'datetime')]
+    private \DateTimeInterface $createdAt;
 
-    /**
-     * @ORM\Column(type="string")
-     * @Assert\NotBlank(message="Vous devez saisir un titre.")
-     */
-    private $title;
+    #[ORM\Column(type: 'string')]
+    #[Assert\NotBlank(message: "Vous devez saisir un titre.")]
+    private ?string $title = null;
 
-    /**
-     * @ORM\Column(type="text")
-     * @Assert\NotBlank(message="Vous devez saisir du contenu.")
-     */
-    private $content;
+    #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank(message: "Vous devez saisir du contenu.")]
+    private ?string $content = null;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $isDone;
+    #[ORM\Column(type: 'boolean')]
+    private $isDone =false;
 
     public function __construct()
     {
-        $this->createdAt = new \Datetime();
+        $this->createdAt = new \DateTimeImmutable();
         $this->isDone = false;
     }
 
@@ -51,12 +39,12 @@ class Task
         return $this->id;
     }
 
-    public function getCreatedAt(): \DateTime
+    public function getCreatedAt(): \DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): self
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
     {
         $this->createdAt = $createdAt;
         return $this;
@@ -87,6 +75,12 @@ class Task
     public function isDone(): bool
     {
         return $this->isDone;
+    }
+
+    public function setIsDone(bool $isDone): self
+    {
+    $this->isDone = $isDone;
+    return $this;
     }
 
     public function toggle(bool $flag): self

@@ -1,10 +1,11 @@
 security:
-    encoders:
-        App\Entity\User:
-            algorithm: auto  # Remplace bcrypt, gère automatiquement le bon algo depuis 4.3
-
+    enable_authenticator_manager: true
+    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        doctrine:
+        app_user_provider:
             entity:
                 class: App\Entity\User
                 property: username
@@ -15,17 +16,17 @@ security:
             security: false
 
         main:
-            anonymous: true
+            lazy: true
             pattern: ^/
-            provider: doctrine
+            provider: app_user_provider
             form_login:
                 login_path: login
-                check_path: login
+                check_path: login_check
                 default_target_path: /
             logout:
                 path: logout
 
     access_control:
-        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/users, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/users, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: ROLE_USER }

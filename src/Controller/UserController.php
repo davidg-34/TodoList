@@ -9,13 +9,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserController extends AbstractController
 {
-    /**
-     * @Route("/users", name="user_list")
-     */
+
+    #[Route('/users', name: 'user_list')]
     public function list(EntityManagerInterface $em): Response
     {
         $users = $em->getRepository(User::class)->findAll();
@@ -24,10 +23,8 @@ class UserController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/users/create", name="user_create")
-     */
-    public function create(Request $request, EntityManagerInterface $em, UserPasswordEncoderInterface $passwordEncoder): Response
+    #[Route('/users/create', name: 'user_create')]
+    public function create(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $userPasswordHasher): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
@@ -35,7 +32,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $hashedPassword = $passwordEncoder->encodePassword($user, $user->getPassword());
+            $hashedPassword = $userPasswordHasher->hashPassword($user, $user->getPassword());
             $user->setPassword($hashedPassword);
 
             $em->persist($user);
@@ -49,17 +46,15 @@ class UserController extends AbstractController
         return $this->render('user/create.html.twig', ['form' => $form->createView()]);
     }
 
-    /**
-     * @Route("/users/{id}/edit", name="user_edit")
-     */
-    public function edit(User $user, Request $request, EntityManagerInterface $em, UserPasswordEncoderInterface $passwordEncoder): Response
+    #[Route('/users/{id}/edit', name: 'user_edit')]
+    public function edit(User $user, Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $userPasswordHasher): Response
     {
         $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $hashedPassword = $passwordEncoder->encodePassword($user, $user->getPassword());
+            $hashedPassword = $userPasswordHasher->hashPassword($user, $user->getPassword());
             $user->setPassword($hashedPassword);
 
             $em->flush();
