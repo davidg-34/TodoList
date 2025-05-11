@@ -28,7 +28,7 @@
         <nav class="navbar navbar-light navbar-fixed-top" style="background-color: #e3f2fd;" role="navigation">
             <div class="container">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="#">To Do List app</a>
+                    <a class="navbar-brand" href="{{ path('index') }}">To Do List app</a>
 
                     <img src="{{ asset('img/Logo_OpenClassrooms.png') }}" alt="OpenClassrooms" />
                 </div>
@@ -38,33 +38,47 @@
         <!-- Page Content -->
         <div class="container">
             <div class="row">
-                <a href="{{ path('user_create') }}" class="btn btn-primary">Créer un utilisateur</a>
-
-                {% if app.user %}
-                <a href="{{ path('logout') }}" class="pull-right btn btn-danger">Se déconnecter</a>
-                {% endif %}
-
-                {% if not app.user and 'login' != app.request.attributes.get('_route') %}
-                <a href="{{ path('login') }}" class="btn btn-success">Se connecter</a>
-                {% endif %}
-            </div>
+    {% if app.user %}
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('user_create') }}" class="btn btn-primary">Créer un utilisateur</a>
+            <a href="{{ path('user_list') }}" class="btn btn-primary">Gérer les utilisateurs</a>
+        {% endif %}
+        <a href="{{ path('logout') }}" class="pull-right btn btn-danger">Se déconnecter</a>
+    {% else %}
+        {% if app.request.attributes.get('_route') != 'login' %}
+            <a href="{{ path('login') }}" class="btn btn-success">Se connecter</a>
+        {% endif %}
+    {% endif %}
+</div>
 
             <div class="row">
                 <div class="col-md-12">
-                    {% for flash_message in app.session.flashBag.get('success') %}
-                        <div class="alert alert-success" role="alert">
-                            <strong>Superbe !</strong> {{ flash_message }}
-                        </div>
-                    {% endfor %}
+                    {% set titles = {
+                        'success': 'Superbe !',
+                        'danger': 'Oups !',
+                        'error': 'Oups !',
+                        'warning': 'Attention !'
+                    } %}
 
-                    {% for flash_message in app.session.flashBag.get('error') %}
-                        <div class="alert alert-danger" role="alert">
-                            <strong>Oops !</strong> {{ flash_message }}
-                        </div>
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }}" role="alert">
+                                <strong>{{ titles[label]|default('') }}</strong> {{ message }}
+                            </div>
+                        {% endfor %}
                     {% endfor %}
 
                     {% block header_title %}{% endblock %}
                     {% block header_img %}<img class="slide-image" src="{{ asset('img/todolist_homepage.jpg') }}" alt="todo list">{% endblock %}
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }}" role="alert">
+                                {% if label == 'success' %}<strong>Superbe !</strong>{% endif %}
+                                {% if label == 'danger' %}<strong>Oups !</strong>{% endif %}
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
                 </div>
             </div>
 
