@@ -51,6 +51,7 @@ class TaskController extends AbstractController
         // Vérifie que l'utilisateur actuel est bien l'auteur de la tâche
         if ($task->getAuthor() !== $this->getUser()) {
             $this->addFlash('danger', "Vous n'avez pas le droit de modifier cette tâche.");
+            return $this->redirectToRoute('task_list');
         }
 
         $form = $this->createForm(TaskType::class, $task);

@@ -1,4 +1,5 @@
 /.env.local
+/.env.test.local
 /app/config/parameters.yml
 /build/
 /phpunit.xml

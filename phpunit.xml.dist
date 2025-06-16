@@ -2,23 +2,28 @@
 
 <!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/9.5/phpunit.xsd"
-         backupGlobals="false"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
          colors="true"
-         bootstrap="vendor/autoload.php"
->
-    <php>
-        <ini name="error_reporting" value="-1" />
+         backupGlobals="false"
+         failOnRisky="true">
 
-        <!-- ###+ doctrine/doctrine-bundle ### -->
-        <!-- Format described at https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html#connecting-using-a-url -->
-        <!-- IMPORTANT: You MUST configure your server version, either here or in config/packages/doctrine.yaml -->
-        <!--  -->
-        <!-- DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db" -->
-        <!-- DATABASE_URL="mysql://app:!ChangeMe!@127.0.0.1:3306/app?serverVersion=8&charset=utf8mb4" -->
-        <!-- <env name="DATABASE_URL" value="postgresql://app:!ChangeMe!@127.0.0.1:5432/app?serverVersion=16&amp;charset=utf8"/> -->
-        <!-- ###- doctrine/doctrine-bundle ### -->
+    <php>
+        <env name="APP_ENV" value="test"/>
+        <ini name="display_errors" value="1"/>
+        <ini name="error_reporting" value="-1"/>
+
+        <!-- Environnement Symfony -->
+        <server name="APP_ENV" value="test" force="true"/>
+        <server name="SHELL_VERBOSITY" value="-1" />
+        <server name="KERNEL_CLASS" value="App\Kernel"/>
+        <server name="SYMFONY_PHPUNIT_REMOVE" value="" />
+        <server name="SYMFONY_PHPUNIT_VERSION" value="9.5" />
     </php>
+
+    <listeners>
+        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
+    </listeners>
 
     <testsuites>
         <testsuite name="Project Test Suite">
@@ -26,12 +31,13 @@
         </testsuite>
     </testsuites>
 
-    <coverage>
+    <coverage cacheDirectory=".phpunit.cache/code-coverage">
         <include>
             <directory suffix=".php">src</directory>
         </include>
-        <exclude>
-            <directory>src/*Bundle/Resources</directory>
-        </exclude>
+        <report>
+            <clover outputFile="coverage.xml"/>
+            <html outputDirectory="public/test-coverage"/>
+        </report>
     </coverage>
 </phpunit>

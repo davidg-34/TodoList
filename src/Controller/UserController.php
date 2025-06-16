@@ -19,10 +19,6 @@ class UserController extends AbstractController
     #[IsGranted('ROLE_ADMIN', message: 'Droits administrateur requis !')]
     public function list(EntityManagerInterface $em): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN')) {
-            $this->addFlash('danger', 'Droits administrateur requis !');
-            return $this->redirectToRoute('task_list');
-        }
 
         $users = $em->getRepository(User::class)->findAll();
 
@@ -35,11 +31,6 @@ class UserController extends AbstractController
     #[Route('/users/create', name: 'user_create')]
     public function create(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $userPasswordHasher): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN')) {
-            $this->addFlash('danger', 'Droits administrateur requis !');
-            return $this->redirectToRoute('task_list');
-        }
-        
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
 
@@ -65,12 +56,6 @@ class UserController extends AbstractController
     public function edit(User $user, Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $userPasswordHasher): Response
     {
 
-        if (!$this->isGranted('ROLE_ADMIN')) {
-            $this->addFlash('danger', 'Droits administrateur requis !');
-            return $this->redirectToRoute('task_list');
-        }
-
-        
         $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
